@@ -1,0 +1,90 @@
+##1D Burgers Eqn
+## 
+## du/dt - d(u^2/2)/dx = 0
+
+from PIL import Image, ImageDraw
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.animation import ArtistAnimation 
+
+L = 2 #length
+tmax = 1.0 
+Nx = 101
+deltax = L/Nx
+deltat=0.9*deltax  #Maximum time step that satisfies the stability condition since 0<u<1
+Nt =  int(np.rint(tmax/deltat))
+print('dx',deltax,'dt',deltat,'tmax',tmax,'Nt',Nt)
+dtdx=deltat/deltax 
+time=0
+
+u = np.zeros([Nx,Nt])
+ 
+#Initial conditions
+for i in range (Nx) :
+    x[i]=i*deltax
+    u[i,0]=0
+    if (x[i]>=.4) and (x[i]<=.8):
+      #  u[i,0]=0.2*(0- (i*deltax-0.3)*(i*deltax-0.7) )
+        u[i,0]=0.5
+""" 
+for i in range (Nx) :
+    if (i>=.3*Nx) and (i<=.5*Nx):
+        u[i,0]=-0.3+(i*deltax - .3)
+    elif (i>=0.5*Nx) and (i<=0.7*Nx):
+        u[i,0]=0.7-(i*deltax -.7)
+    else:
+        u[i,0]=0              
+""" 
+for n in range(0,Nt-1):
+    for i in range(1,Nx):
+        u[i,n+1]=u[i,n]-dtdx*(1/2)*(u[i,n]*u[i,n] - u[i-1,n]*u[i-1,n])
+        
+    u[0,n+1]=0.0
+
+x=list(range(Nx))
+y=list(range(Nt))
+X, Y = np.meshgrid(x,y)
+
+plt.plot(x,u[:,Nt-1],'b')
+
+def functu(u):
+    z=u[X,Y]
+    return z
+def functv(v):
+    z=v[X,Y]
+    return z
+
+#Z = functu(u)
+#fig = plt.figure()
+#ax = Axes3D(fig)
+#ax.plot_wireframe(X,Y,Z, color='r')
+#ax.set_xlabel('x')
+#ax.set_ylabel('t')
+#ax.set_zlabel('U')
+#plt.show()
+
+
+#""" 
+%matplotlib nbagg 
+#from matplotlib.animation import ArtistAnimation #Import methods for creating animations
+
+fig = plt.figure()
+
+anim = [] #A list for storing the data for animation
+
+for i in range(0,Nt-2):
+    U=list(u[:,i])
+##    V=list(v[:,i])
+    x=list(range(Nx))
+ #   if i % int(Nt*0.01) ==0: 
+    im=plt.plot(x,U, '-', color='red',markersize=10, linewidth = 2)
+##    im=plt.plot(x,V, '-', color='blue',markersize=10, linewidth = 2)
+    anim.append(im)
+
+anim = ArtistAnimation(fig, anim) #Animation creation
+plt.xlabel('x')
+plt.ylabel('U,V')
+
+fig.show()
+#
